@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}View Notes{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center">View Notes by Category</h1>
+    <div class="row mt-4">
+        {% for category in categories %}
+        <div class="col-md-4 mb-3">
+            <a href="{{ url_for('add_category_notes', category=category) }}" class="btn btn-outline-dark w-100 py-3">{{ category }}</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

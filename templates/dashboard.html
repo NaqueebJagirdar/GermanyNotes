@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Team Dashboard{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center">Bi-Weekly Note Management System</h1>
+    <div class="d-flex justify-content-center mt-4">
+        <a href="{{ url_for('add_notes') }}" class="btn btn-primary me-3">Add Notes</a>
+        <a href="{{ url_for('view_notes') }}" class="btn btn-secondary">View Notes</a>
+    </div>
+</div>
+{% endblock %}

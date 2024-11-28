@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Notes in {{ category }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Notes in {{ category }}</h1>
+    <div class="list-group">
+        {% if notes %}
+        {% for note in notes %}
+        <div class="list-group-item">
+            <h5>{{ note.title }}</h5>
+            <p>{{ note.content }}</p>
+        </div>
+        {% endfor %}
+        {% else %}
+        <p>No notes available for this category.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
