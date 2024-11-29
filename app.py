@@ -23,6 +23,7 @@ class Note(db.Model):
     date = db.Column(db.Date, default=datetime.utcnow)
     created_date = db.Column(db.DateTime, default=datetime.utcnow)
     edited_date = db.Column(db.DateTime, onupdate=datetime.utcnow)
+    status = db.Column(db.String(50), default="In-Query") 
 
 # Routes
 @app.route("/")
@@ -113,6 +114,15 @@ def update_notes_dates():
             db.session.add(note)
     db.session.commit()
     click.echo("Updated notes with missing created_date and edited_date.")
+
+@app.route("/update-note-status/<int:note_id>/<category>", methods=["POST"])
+def update_note_status(note_id, category):
+    note = Note.query.get_or_404(note_id)
+    status = request.form.get("status")
+    if status in ["In-Query", "Completed"]:
+        note.status = status
+        db.session.commit()
+    return redirect(url_for("add_category_notes", category=category))
 
 if __name__ == "__main__":
     app.run(debug=True)
