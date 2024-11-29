@@ -36,7 +36,12 @@
     </style>
 </head>
 <body>
-    
+    <!-- Logo -->
+    <div class="logo-container">
+        <a href="/">
+            <img src="{{ url_for('static', filename='images/download.png') }}" alt="Enercon Logo">
+        </a>
+    </div>
     <!-- Main Content Section -->
     <main class="container mt-4">
         {% block content %}

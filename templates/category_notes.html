@@ -1,21 +1,23 @@
 {% extends "base.html" %}
-
-{% block title %}Notes in {{ category }}{% endblock %}
-
+{% block title %}Add Notes{% endblock %}
 {% block content %}
 <div class="container mt-5">
-    <h1>Notes in {{ category }}</h1>
-    <div class="list-group">
-        {% if notes %}
-        {% for note in notes %}
-        <div class="list-group-item">
-            <h5>{{ note.title }}</h5>
-            <p>{{ note.content }}</p>
+    <h1 class="text-center">Choose Note Category</h1>
+    <div class="scroll-container mt-4">
+        <div class="row">
+            {% for category in categories %}
+            <div class="col-md-4 mb-3 position-relative">
+                <a href="{{ url_for('add_category_notes', category=category.name) }}" class="btn btn-outline-primary w-100 py-3">
+                    {{ category.name }}
+                </a>
+                {% if category.name in category_note_counts and category_note_counts[category.name] > 0 %}
+                <span class="badge bg-warning position-absolute" style="top: -10px; right: 10px;">
+                    {{ category_note_counts[category.name] }}
+                </span>
+                {% endif %}
+            </div>
+            {% endfor %}
         </div>
-        {% endfor %}
-        {% else %}
-        <p>No notes available for this category.</p>
-        {% endif %}
     </div>
 </div>
 {% endblock %}

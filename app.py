@@ -4,7 +4,6 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from flask_migrate import Migrate
 
-
 app = Flask(__name__)
 
 # Database configuration
@@ -124,7 +123,19 @@ def update_note_status(note_id, category):
         db.session.commit()
     return redirect(url_for("add_category_notes", category=category))
 
+# New route to list categories with count of "In-Query" notes
+@app.route("/categories")
+def list_categories():
+    # Get distinct categories
+    categories = Note.query.with_entities(Note.category).distinct().all()
+    categories = [c[0] for c in categories]
+
+    category_note_counts = {}
+    for category in categories:
+        in_query_count = Note.query.filter_by(category=category, status="In-Query").count()
+        category_note_counts[category] = in_query_count
+
+    return render_template("categories.html", categories=categories, category_note_counts=category_note_counts)
+
 if __name__ == "__main__":
     app.run(debug=True)
-
-
