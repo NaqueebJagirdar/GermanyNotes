@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="static\css\styles.css" />
+    <Content Include="static\images\download.png" />
     <Content Include="static\images\pexels-shottrotter-695342.jpg" />
     <Content Include="static\js\scripts.js" />
     <Content Include="templates\dashboard.html" />
