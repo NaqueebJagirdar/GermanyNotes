@@ -52,6 +52,36 @@
                     </small>
                     {% endif %}
 
+                    <!-- Display Current Status -->
+                    <br>
+                    <small class="text-muted">
+                        Current Status:
+                        <span class="badge {% if note.status == 'Completed' %}bg-success{% elif note.status == 'In-Query' %}bg-warning{% endif %}">
+                            {{ note.status }}
+                        </span>
+                    </small>
+
+                    <!-- Status Buttons -->
+                    <div class="mt-2">
+                        <!-- Button to mark as In-Query -->
+                        <form method="POST" action="{{ url_for('update_note_status', note_id=note.id, category=category) }}" style="display:inline;">
+                            <input type="hidden" name="status" value="In-Query">
+                            <button type="submit" class="btn btn-warning btn-sm" {% if note.status=='In-Query' %}disabled{% endif %}>
+                                In-Query
+                            </button>
+                        </form>
+
+                        <!-- Button to mark as Completed -->
+                        <form method="POST" action="{{ url_for('update_note_status', note_id=note.id, category=category) }}" style="display:inline;">
+                            <input type="hidden" name="status" value="Completed">
+                            <button type="submit" class="btn btn-success btn-sm" {% if note.status=='Completed' %}disabled{% endif %}>
+                                Completed
+                            </button>
+                        </form>
+                    </div>
+
+
+                    <!-- Edit and Delete Buttons -->
                     <div class="mt-2">
                         <button class="btn btn-warning btn-sm" onclick="toggleEdit({{ note.id }})">Edit</button>
                         <form method="POST" action="{{ url_for('delete_note', note_id=note.id, category=category) }}" style="display:inline;">
