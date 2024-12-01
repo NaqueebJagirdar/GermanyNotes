@@ -53,6 +53,42 @@ def add_notes():
             return redirect(url_for("view_notes"))
     return render_template("add_notes.html", categories=categories)
 
+class Colleague(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    status = db.Column(db.String(20), nullable=False, default="Absent")
+
+@app.cli.command("seed-attendance")
+def seed_attendance():
+    """Seed the database with initial colleagues for attendance."""
+    colleagues = [
+        Colleague(name="John Doe", status="Present"),
+        Colleague(name="Jane Smith", status="Absent"),
+        Colleague(name="Naqueeb Jagirdar", status="Present"),
+        Colleague(name="Sarah Connor", status="Present"),
+        Colleague(name="James Bond", status="Absent"),
+    ]
+    db.session.bulk_save_objects(colleagues)
+    db.session.commit()
+    print("Attendance data seeded.")
+
+@app.route("/attendance", methods=["GET", "POST"])
+def attendance():
+    # Fetch all colleagues from the database
+    colleagues = Colleague.query.all()
+
+    # Update attendance if a POST request is made
+    if request.method == "POST":
+        colleague_id = request.form.get("colleague_id")
+        new_status = request.form.get("status")
+        colleague = Colleague.query.get(colleague_id)
+        if colleague and new_status in ["Present", "Absent"]:
+            colleague.status = new_status
+            db.session.commit()
+        return redirect(url_for("attendance"))
+
+    return render_template("attendance.html", colleagues=colleagues)
+
 @app.route("/view-notes", methods=["GET"])
 def view_notes():
     categories = Note.query.with_entities(Note.category).distinct().all()

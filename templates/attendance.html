@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Attendance{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center">Attendance</h1>
+    <table class="table table-bordered table-hover mt-4">
+        <thead class="thead-dark">
+            <tr>
+                <th>Name</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for colleague in colleagues %}
+            <tr>
+                <td>{{ colleague.name }}</td>
+                <td>
+                    <span class="attendance-badge {% if colleague.status == 'Present' %}bg-success{% else %}bg-warning{% endif %}">
+                        {{ colleague.status }}
+                    </span>
+                </td>
+                <td>
+                    <!-- Update Status Form -->
+                    <form method="POST" action="{{ url_for('attendance') }}" style="display: inline;">
+                        <input type="hidden" name="colleague_id" value="{{ colleague.id }}">
+                        <input type="hidden" name="status" value="Present">
+                        <button type="submit" class="btn btn-success btn-sm" {% if colleague.status == 'Present' %}disabled{% endif %}>
+                            Mark Present
+                        </button>
+                    </form>
+                    <form method="POST" action="{{ url_for('attendance') }}" style="display: inline;">
+                        <input type="hidden" name="colleague_id" value="{{ colleague.id }}">
+                        <input type="hidden" name="status" value="Absent">
+                        <button type="submit" class="btn btn-danger btn-sm" {% if colleague.status == 'Absent' %}disabled{% endif %}>
+                            Mark Absent
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
