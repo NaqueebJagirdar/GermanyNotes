@@ -72,28 +72,37 @@ def seed_attendance():
     db.session.commit()
     print("Attendance data seeded.")
 
-@app.route("/attendance", methods=["GET", "POST"])
+@app.route('/attendance', methods=['GET', 'POST'])
 def attendance():
-    # Fetch all colleagues from the database
-    colleagues = Colleague.query.all()
-    today_date = datetime.now()
-    date_dd_mm_yyyy = today_date.strftime("%d-%m-%Y")
-    date_words = today_date.strftime("%d %B %Y")
-    # Update attendance if a POST request is made
-    if request.method == "POST":
-        colleague_id = request.form.get("colleague_id")
-        new_status = request.form.get("status")
-        colleague = Colleague.query.get(colleague_id)
-        if colleague and new_status in ["Present", "Absent"]:
-            colleague.status = new_status
+    if request.method == 'POST':
+        # Add a new colleague
+        name = request.form.get('name')
+        if name:
+            new_colleague = Colleague(name=name, status='Absent')  # Default status is 'Absent'
+            db.session.add(new_colleague)
             db.session.commit()
-        return redirect(url_for("attendance"))
+        return redirect(url_for('attendance'))
 
+    # Fetch all colleagues from the database
+    colleagues = Colleague.query.all()  # Dynamically fetch all colleague data
+
+    # Calculate present and total counts dynamically
+    total_colleagues = len(colleagues)  # Total number of colleagues in the database
+    present_colleagues = sum(1 for colleague in colleagues if colleague.status == 'Present')  # Count of colleagues marked as 'Present'
+
+    # Get the current date in two formats
+    today_date = datetime.now()
+    date_dd_mm_yyyy = today_date.strftime("%d-%m-%Y")  # Format: 01-12-2024
+    date_words = today_date.strftime("%d %B %Y")  # Format: 01 December 2024
+
+    # Pass the calculated and fetched data to the template
     return render_template(
         'attendance.html',
         date_dd_mm_yyyy=date_dd_mm_yyyy,
         date_words=date_words,
-        colleagues=colleagues
+        colleagues=colleagues,
+        present_colleagues=present_colleagues,  # Dynamic count of present colleagues
+        total_colleagues=total_colleagues      # Dynamic total count of colleagues
     )
 
 @app.route("/add-colleague", methods=["POST"])

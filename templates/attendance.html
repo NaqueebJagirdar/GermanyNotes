@@ -3,6 +3,12 @@
 {% block content %}
 <div class="attendance-container mt-5">
     <h1 class="text-center">Attendance</h1>
+    <!-- Dynamic Attendance Summary -->
+    <h3 class="text-center">
+        Today's Attendance:
+        <span style="color: green;">{{ present_colleagues }}</span> /
+        <span style="color: blue;">{{ total_colleagues }}</span>
+    </h3>
     <!-- Display Current Date -->
     <p class="text-center mt-3">
         <strong>Today's Date:</strong>
