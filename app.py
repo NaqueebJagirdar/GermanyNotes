@@ -22,7 +22,7 @@ class Note(db.Model):
     date = db.Column(db.Date, default=datetime.utcnow)
     created_date = db.Column(db.DateTime, default=datetime.utcnow)
     edited_date = db.Column(db.DateTime, onupdate=datetime.utcnow)
-    status = db.Column(db.String(50), default="In-Query") 
+    status = db.Column(db.String(50), default="In-Query")
 
 # Routes
 @app.route("/")
@@ -88,6 +88,40 @@ def attendance():
         return redirect(url_for("attendance"))
 
     return render_template("attendance.html", colleagues=colleagues)
+
+@app.route("/add-colleague", methods=["POST"])
+def add_colleague():
+    name = request.form.get("name")
+    if name:
+        new_colleague = Colleague(name=name, status="Absent")
+        db.session.add(new_colleague)
+        db.session.commit()
+    return redirect(url_for("attendance"))
+
+@app.route("/edit-colleague/<int:colleague_id>", methods=["POST"])
+def edit_colleague(colleague_id):
+    name = request.form.get("name")
+    colleague = Colleague.query.get_or_404(colleague_id)
+    if name:
+        colleague.name = name
+        db.session.commit()
+    return redirect(url_for("attendance"))
+
+@app.route("/delete-colleague/<int:colleague_id>", methods=["POST"])
+def delete_colleague(colleague_id):
+    colleague = Colleague.query.get_or_404(colleague_id)
+    db.session.delete(colleague)
+    db.session.commit()
+    return redirect(url_for("attendance"))
+
+@app.route("/update-status/<int:colleague_id>", methods=["POST"])
+def update_status(colleague_id):
+    status = request.form.get("status")
+    colleague = Colleague.query.get_or_404(colleague_id)
+    if status in ["Present", "Absent"]:
+        colleague.status = status
+        db.session.commit()
+    return redirect(url_for("attendance"))
 
 @app.route("/view-notes", methods=["GET"])
 def view_notes():
