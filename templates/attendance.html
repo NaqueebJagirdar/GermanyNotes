@@ -3,7 +3,12 @@
 {% block content %}
 <div class="attendance-container mt-5">
     <h1 class="text-center">Attendance</h1>
-
+    <!-- Display Current Date -->
+    <p class="text-center mt-3">
+        <strong>Today's Date:</strong>
+        <span>{{ date_dd_mm_yyyy }}</span>
+        (<span>{{ date_words }}</span>)
+    </p>
     <!-- Add New Colleague Form -->
     <form method="POST" action="{{ url_for('add_colleague') }}" class="mb-4">
         <div class="form-group">
