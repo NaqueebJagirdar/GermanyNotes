@@ -55,11 +55,11 @@
                     <!-- Display Current Status -->
                     <br>
                     <small class="text-muted">
-                        Current Status:
-                        <span class="badge {% if note.status == 'Completed' %}bg-success{% elif note.status == 'In-Query' %}bg-warning{% endif %}">
-                            {{ note.status }}
-                        </span>
-                    </small>
+    <span class="badge {% if note.status == 'Completed' %}bg-success{% elif note.status == 'In-Query' %}bg-warning{% endif %}">
+        {{ note.status }}
+    </span>
+</small>
+
 
                     <!-- Status Buttons -->
                     <div class="mt-2">
