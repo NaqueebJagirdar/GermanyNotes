@@ -76,7 +76,9 @@ def seed_attendance():
 def attendance():
     # Fetch all colleagues from the database
     colleagues = Colleague.query.all()
-
+    today_date = datetime.now()
+    date_dd_mm_yyyy = today_date.strftime("%d-%m-%Y")
+    date_words = today_date.strftime("%d %B %Y")
     # Update attendance if a POST request is made
     if request.method == "POST":
         colleague_id = request.form.get("colleague_id")
@@ -87,7 +89,12 @@ def attendance():
             db.session.commit()
         return redirect(url_for("attendance"))
 
-    return render_template("attendance.html", colleagues=colleagues)
+    return render_template(
+        'attendance.html',
+        date_dd_mm_yyyy=date_dd_mm_yyyy,
+        date_words=date_words,
+        colleagues=colleagues
+    )
 
 @app.route("/add-colleague", methods=["POST"])
 def add_colleague():
