@@ -12,22 +12,21 @@
         <button type="submit" class="btn btn-primary">Add Colleague</button>
     </form>
 
-    <!-- Attendance Table -->
+    <!-- Attendance Tables -->
     <table class="attendance-table table table-bordered table-hover mt-4">
         <thead>
             <tr>
                 <th>Name</th>
                 <th>Status</th>
                 <th>Actions</th>
+                <th>Role</th>
             </tr>
         </thead>
         <tbody>
             {% for colleague in colleagues %}
-            <tr>
+            <tr id="row-{{ colleague.id }}" class="{% if colleague.role == 'Coordinator' %}coordinator-highlight{% elif colleague.role == 'Presenter' %}presenter-highlight{% elif colleague.role == 'Editor' %}editor-highlight{% endif %}">
                 <!-- Colleague Name -->
-                <td>
-                    {{ colleague.name }}
-                </td>
+                <td>{{ colleague.name }}</td>
 
                 <!-- Attendance Status -->
                 <td>
@@ -62,11 +61,21 @@
                         <button type="submit" class="attendance-btn-sm btn btn-danger">Delete</button>
                     </form>
                 </td>
+
+                <!-- Role Assignment -->
+                <td>
+                    <select class="role-dropdown" onchange="assignRole({{ colleague.id }}, this.value)">
+                        <option value="" {% if not colleague.role %}selected{% endif %}>Assign Role</option>
+                        <option value="Coordinator" {% if colleague.role == 'Coordinator' %}selected{% endif %}>Coordinator</option>
+                        <option value="Presenter" {% if colleague.role == 'Presenter' %}selected{% endif %}>Presenter</option>
+                        <option value="Editor" {% if colleague.role == 'Editor' %}selected{% endif %}>Editor</option>
+                    </select>
+                </td>
             </tr>
 
             <!-- Edit Form (Initially Hidden) -->
             <tr id="edit-row-{{ colleague.id }}" class="hidden-form">
-                <td colspan="3">
+                <td colspan="4">
                     <form method="POST" action="{{ url_for('edit_colleague', colleague_id=colleague.id) }}">
                         <div class="form-group">
                             <input type="text" name="name" class="form-control" value="{{ colleague.name }}" required>
@@ -81,11 +90,22 @@
     </table>
 </div>
 
-<!-- Inline JavaScript to Toggle Edit Form -->
+<!-- Inline JavaScript to Toggle Edit Form and Assign Roles -->
 <script>
     function toggleEdit(colleagueId) {
         const editRow = document.getElementById(`edit-row-${colleagueId}`);
         editRow.classList.toggle('hidden-form');
+    }
+
+    function assignRole(colleagueId, role) {
+        // Remove all existing role highlights
+        const row = document.getElementById(`row-${colleagueId}`);
+        row.classList.remove('coordinator-highlight', 'presenter-highlight', 'editor-highlight');
+
+        // Add appropriate highlight based on the selected role
+        if (role === 'Coordinator') row.classList.add('coordinator-highlight');
+        else if (role === 'Presenter') row.classList.add('presenter-highlight');
+        else if (role === 'Editor') row.classList.add('editor-highlight');
     }
 </script>
 {% endblock %}
