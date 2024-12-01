@@ -23,7 +23,7 @@ class Note(db.Model):
     created_date = db.Column(db.DateTime, default=datetime.utcnow)
     edited_date = db.Column(db.DateTime, onupdate=datetime.utcnow)
     status = db.Column(db.String(50), default="In-Query")
-
+    editor_name = db.Column(db.String(100), nullable=True)
 # Routes
 @app.route("/")
 def dashboard():
@@ -57,7 +57,7 @@ class Colleague(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     status = db.Column(db.String(20), nullable=False, default="Absent")
-
+    role = db.Column(db.String(50), nullable=True)
 @app.cli.command("seed-attendance")
 def seed_attendance():
     """Seed the database with initial colleagues for attendance."""
@@ -139,6 +139,25 @@ def update_status(colleague_id):
         db.session.commit()
     return redirect(url_for("attendance"))
 
+@app.route('/save-roles', methods=['POST'])
+def save_roles():
+    roles = request.json.get('roles', {})
+    for colleague_id, role in roles.items():
+        colleague = Colleague.query.get(int(colleague_id))
+        if colleague:
+            colleague.role = role  # Save role
+            db.session.commit()
+    return {"message": "Roles saved successfully"}, 200
+
+@app.route('/clear-roles', methods=['POST'])
+def clear_roles():
+    colleagues = Colleague.query.all()
+    for colleague in colleagues:
+        colleague.role = None  # Clear role
+        db.session.commit()
+    return {"message": "Roles cleared successfully"}, 200
+
+
 @app.route("/view-notes", methods=["GET"])
 def view_notes():
     categories = Note.query.with_entities(Note.category).distinct().all()
@@ -147,15 +166,23 @@ def view_notes():
 
 @app.route("/add-category-notes/<category>", methods=["GET", "POST"])
 def add_category_notes(category):
+    # Fetch the current editor
+    editor = Colleague.query.filter_by(role="Editor", status="Present").first()
+    editor_name = editor.name if editor else "No Editor Assigned"
     if request.method == "POST":
         title = request.form.get("title")
         content = request.form.get("content")
         if title and content:
-            new_note = Note(category=category, title=title, content=content)
+            new_note = Note(
+                category=category,
+                title=title,
+                content=content,
+                editor_name=editor_name
+            )
             db.session.add(new_note)
             db.session.commit()
     notes = Note.query.filter_by(category=category).all()
-    return render_template("add_category_notes.html", category=category, notes=notes)
+    return render_template("add_category_notes.html", category=category, notes=notes, editor_name=editor_name)
 
 @app.route("/delete-note/<int:note_id>/<category>", methods=["POST"])
 def delete_note(note_id, category):

@@ -21,99 +21,57 @@
     </form>
 
     <!-- Display Existing Notes -->
-    <h2 id="existing-notes" class="mt-5">Existing Notes</h2>
-    {% if notes %}
-    <div class="scrollable-notes mt-3">
-        <ul class="list-group">
+<h2 id="existing-notes" class="mt-5">Existing Notes</h2>
+{% if notes %}
+<div class="scrollable-notes mt-3">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Content</th>
+                <th>Editor</th> <!-- New column for Editor -->
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
             {% for note in notes|reverse %}
-            <li class="list-group-item">
-                <!-- Display Note -->
-                <div class="view-note" id="view-note-{{ note.id }}">
-                    <h5>{{ note.title }}</h5>
-                    <p>{{ note.content }}</p>
-                    <!-- Refactored Date Display -->
-                    <small class="text-muted">
-                        Created on:
-                        {% if note.created_date %}
-                        {{ note.created_date.strftime('%Y-%m-%d') }}
-                        {% else %}
-                        Not available
-                        {% endif %}
-                    </small>
-                    {% if note.edited_date %}
-                    <br>
-                    <small class="text-muted">
-                        Last edited on:
-                        {% if note.edited_date %}
-                        {{ note.edited_date.strftime('%Y-%m-%d') }}
-                        {% else %}
-                        Not available
-                        {% endif %}
-                    </small>
-                    {% endif %}
-
-                    <!-- Display Current Status -->
-                    <br>
-                    <small class="text-muted">
-    <span class="badge {% if note.status == 'Completed' %}bg-success{% elif note.status == 'In-Query' %}bg-warning{% endif %}">
-        {{ note.status }}
-    </span>
-</small>
-
-
+            <tr>
+                <td>{{ note.title }}</td>
+                <td>{{ note.content }}</td>
+                <td>{{ note.editor_name }}</td> <!-- Display Editor -->
+                <td>
+                    <span class="badge {% if note.status == 'Completed' %}bg-success{% elif note.status == 'In-Query' %}bg-warning{% endif %}">
+                        {{ note.status }}
+                    </span>
+                </td>
+                <td>
                     <!-- Status Buttons -->
-                    <div class="mt-2">
-                        <!-- Button to mark as In-Query -->
-                        <form method="POST" action="{{ url_for('update_note_status', note_id=note.id, category=category) }}" style="display:inline;">
-                            <input type="hidden" name="status" value="In-Query">
-                            <button type="submit" class="btn btn-warning btn-sm" {% if note.status=='In-Query' %}disabled{% endif %}>
-                                In-Query
-                            </button>
-                        </form>
-
-                        <!-- Button to mark as Completed -->
-                        <form method="POST" action="{{ url_for('update_note_status', note_id=note.id, category=category) }}" style="display:inline;">
-                            <input type="hidden" name="status" value="Completed">
-                            <button type="submit" class="btn btn-success btn-sm" {% if note.status=='Completed' %}disabled{% endif %}>
-                                Completed
-                            </button>
-                        </form>
-                    </div>
-
-
-                    <!-- Edit and Delete Buttons -->
-                    <div class="mt-2">
-                        <button class="btn btn-warning btn-sm" onclick="toggleEdit({{ note.id }})">Edit</button>
-                        <form method="POST" action="{{ url_for('delete_note', note_id=note.id, category=category) }}" style="display:inline;">
-                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- Edit Form -->
-                <div class="edit-note d-none" id="edit-note-{{ note.id }}">
-                    <form method="POST" action="{{ url_for('edit_note', note_id=note.id, category=category) }}">
-                        <div class="form-group">
-                            <label for="title-{{ note.id }}">Title</label>
-                            <input type="text" class="form-control" id="title-{{ note.id }}" name="title" value="{{ note.title }}" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="content-{{ note.id }}">Content</label>
-                            <textarea class="form-control" id="content-{{ note.id }}" name="content" rows="4" required>{{ note.content }}</textarea>
-                        </div>
-                        <div class="mt-2">
-                            <button type="submit" class="btn btn-success btn-sm">Save</button>
-                            <button type="button" class="btn btn-secondary btn-sm" onclick="toggleEdit({{ note.id }})">Cancel</button>
-                        </div>
+                    <form method="POST" action="{{ url_for('update_note_status', note_id=note.id, category=category) }}" style="display:inline;">
+                        <input type="hidden" name="status" value="In-Query">
+                        <button type="submit" class="btn btn-warning btn-sm" {% if note.status == 'In-Query' %}disabled{% endif %}>
+                            In-Query
+                        </button>
                     </form>
-                </div>
-            </li>
+                    <form method="POST" action="{{ url_for('update_note_status', note_id=note.id, category=category) }}" style="display:inline;">
+                        <input type="hidden" name="status" value="Completed">
+                        <button type="submit" class="btn btn-success btn-sm" {% if note.status == 'Completed' %}disabled{% endif %}>
+                            Completed
+                        </button>
+                    </form>
+                    <button class="btn btn-warning btn-sm" onclick="toggleEdit({{ note.id }})">Edit</button>
+                    <form method="POST" action="{{ url_for('delete_note', note_id=note.id, category=category) }}" style="display:inline;">
+                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
+                </td>
+            </tr>
             {% endfor %}
-        </ul>
-    </div>
-    {% else %}
-    <p class="text-muted">No notes available for this category.</p>
-    {% endif %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<p class="text-muted">No notes available for this category.</p>
+{% endif %}
 </div>
 
 <!-- Inline Editing Script -->

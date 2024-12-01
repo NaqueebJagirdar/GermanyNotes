@@ -75,7 +75,7 @@
 
                 <!-- Role Assignment -->
                 <td>
-                    <select class="role-dropdown" onchange="assignRole({{ colleague.id }}, this.value)">
+                    <select class="role-dropdown" onchange="updateRole({{ colleague.id }}, this.value)">
                         <option value="" {% if not colleague.role %}selected{% endif %}>Assign Role</option>
                         <option value="Coordinator" {% if colleague.role == 'Coordinator' %}selected{% endif %}>Coordinator</option>
                         <option value="Presenter" {% if colleague.role == 'Presenter' %}selected{% endif %}>Presenter</option>
@@ -99,24 +99,55 @@
             {% endfor %}
         </tbody>
     </table>
+
+    <!-- Save and Clear Roles Buttons -->
+    <div class="mt-4">
+        <button class="btn btn-primary" onclick="saveRoles()">Save Roles</button>
+        <button class="btn btn-danger" onclick="clearRoles()">Clear Roles</button>
+    </div>
 </div>
 
-<!-- Inline JavaScript to Toggle Edit Form and Assign Roles -->
+<!-- Inline JavaScript to Handle Roles -->
 <script>
+    let roles = {};
+
+    function updateRole(colleagueId, role) {
+        roles[colleagueId] = role; // Track role changes locally
+    }
+
+    function saveRoles() {
+        fetch('/save-roles', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ roles: roles }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+        })
+        .catch(error => console.error('Error saving roles:', error));
+    }
+
+    function clearRoles() {
+        fetch('/clear-roles', {
+            method: 'POST',
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+            // Reset roles locally
+            roles = {};
+            // Reload the page to update the UI
+            location.reload();
+        })
+        .catch(error => console.error('Error clearing roles:', error));
+    }
+
     function toggleEdit(colleagueId) {
         const editRow = document.getElementById(`edit-row-${colleagueId}`);
         editRow.classList.toggle('hidden-form');
-    }
-
-    function assignRole(colleagueId, role) {
-        // Remove all existing role highlights
-        const row = document.getElementById(`row-${colleagueId}`);
-        row.classList.remove('coordinator-highlight', 'presenter-highlight', 'editor-highlight');
-
-        // Add appropriate highlight based on the selected role
-        if (role === 'Coordinator') row.classList.add('coordinator-highlight');
-        else if (role === 'Presenter') row.classList.add('presenter-highlight');
-        else if (role === 'Editor') row.classList.add('editor-highlight');
     }
 </script>
 {% endblock %}
