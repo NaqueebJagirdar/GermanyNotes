@@ -21,48 +21,74 @@ h1, h2 {
     color: #2c3e50;
     text-transform: uppercase;
     letter-spacing: 1px;
-    text-align: center;
 }
 
-/* Enercon Logo Container */
+/* Logo Container Styling (Added for Enercon Logo) */
 .logo-container {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    z-index: 1000;
+    position: absolute; /* Fixes the logo in a static position */
+    top: 10px; /* Aligns the logo near the top */
+    left: 10px; /* Aligns the logo near the left */
+    z-index: 1000; /* Ensures it appears above other content */
 }
 
 .logo-container img {
-    height: 50px;
-    width: auto;
-    max-width: 100%;
+    height: 50px; /* Reduces the logo size */
+    width: auto; /* Maintains the aspect ratio */
+    max-width: 100%; /* Ensures the image doesn’t overflow */
 }
 
-/* Note Category Button Styling */
+/* Main Container Styling */
+.container {
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 10px;
+    text-align: center;
+}
+/* Note Category Buttons */
 .note-category-btn {
     font-size: 18px;
-    padding: 15px;
-    width: 200px; /* Uniform width */
-    height: 60px; /* Uniform height */
+    width: 250px; /* Uniform width for all buttons */
+    height: 60px; /* Adjusted height for similar proportions to "Add Notes" */
     display: flex;
     align-items: center; /* Center text vertically */
     justify-content: center; /* Center text horizontally */
-    margin: 15px; /* Add spacing between buttons */
+    margin: 10px; /* Spacing between buttons */
     text-align: center;
-    border: 2px solid #007bff;
-    border-radius: 8px; /* Rounded corners */
-    background-color: #007bff; /* Blue background */
+    border: none; /* Removed border for consistency with "Add Notes" button */
+    border-radius: 5px; /* Slightly rounded corners */
+    background-color: #007bff; /* Solid blue background */
     color: white; /* White text color */
-    transition: all 0.3s ease;
     text-decoration: none; /* Remove underline */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Box shadow */
+    transition: all 0.3s ease; /* Smooth hover animation */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Button shadow for a pop-out effect */
 }
 
 .note-category-btn:hover {
-    background-color: #0056b3; /* Darker blue on hover */
-    transform: scale(1.05); /* Slight zoom effect */
+    background-color: #0056b3; /* Slightly darker blue on hover */
+    transform: scale(1.05); /* Subtle zoom effect */
 }
 
+/* Button Grid for Categories */
+.category-grid {
+    display: flex;
+    flex-wrap: wrap; /* Ensure buttons wrap to the next line */
+    justify-content: center; /* Center the grid */
+    gap: 20px; /* Space between rows and columns */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .note-category-btn {
+        width: 90%; /* Adjust width for smaller screens */
+        height: auto; /* Allow height to adapt */
+    }
+
+    .category-container {
+        padding: 15px;
+    }
+}
 /* Attendance Main Content Container */
 .attendance-container {
     max-width: 900px;

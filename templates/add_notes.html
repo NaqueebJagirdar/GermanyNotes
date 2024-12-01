@@ -1,17 +1,17 @@
 {% extends "base.html" %}
 {% block title %}Add Notes{% endblock %}
 {% block content %}
-<div class="note-category-container mt-5">
+<div class="category-container mt-5">
     <!-- Attendance Button -->
     <div class="text-end mb-3">
         <a href="{{ url_for('attendance') }}" class="attendance-action-btn">Attendance</a>
     </div>
 
     <!-- Page Title -->
-    <h1 class="section-header">Choose Note Category</h1>
+    <h1>Choose Note Category</h1>
 
-    <!-- Categories Section -->
-    <div class="d-flex flex-wrap justify-content-center mt-4">
+    <!-- Category Buttons -->
+    <div class="category-grid">
         {% for category in categories %}
         <a href="{{ url_for('add_category_notes', category=category) }}" class="note-category-btn">
             {{ category }}
