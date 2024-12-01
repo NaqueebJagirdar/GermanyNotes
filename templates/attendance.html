@@ -1,10 +1,20 @@
 {% extends "base.html" %}
 {% block title %}Attendance{% endblock %}
 {% block content %}
-<div class="container mt-5">
+<div class="attendance-container mt-5">
     <h1 class="text-center">Attendance</h1>
-    <table class="table table-bordered table-hover mt-4">
-        <thead class="thead-dark">
+
+    <!-- Add New Colleague Form -->
+    <form method="POST" action="{{ url_for('add_colleague') }}" class="mb-4">
+        <div class="form-group">
+            <input type="text" name="name" class="form-control" placeholder="Enter colleague's name" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Add Colleague</button>
+    </form>
+
+    <!-- Attendance Table -->
+    <table class="attendance-table table table-bordered table-hover mt-4">
+        <thead>
             <tr>
                 <th>Name</th>
                 <th>Status</th>
@@ -14,27 +24,55 @@
         <tbody>
             {% for colleague in colleagues %}
             <tr>
-                <td>{{ colleague.name }}</td>
+                <!-- Colleague Name -->
                 <td>
-                    <span class="attendance-badge {% if colleague.status == 'Present' %}bg-success{% else %}bg-warning{% endif %}">
+                    {{ colleague.name }}
+                </td>
+
+                <!-- Attendance Status -->
+                <td>
+                    <span class="{% if colleague.status == 'Present' %}badge-present{% else %}badge-absent{% endif %}">
                         {{ colleague.status }}
                     </span>
                 </td>
+
+                <!-- Actions (Update, Edit, Delete) -->
                 <td>
-                    <!-- Update Status Form -->
-                    <form method="POST" action="{{ url_for('attendance') }}" style="display: inline;">
-                        <input type="hidden" name="colleague_id" value="{{ colleague.id }}">
+                    <!-- Mark Present -->
+                    <form method="POST" action="{{ url_for('update_status', colleague_id=colleague.id) }}" style="display:inline;">
                         <input type="hidden" name="status" value="Present">
-                        <button type="submit" class="btn btn-success btn-sm" {% if colleague.status == 'Present' %}disabled{% endif %}>
+                        <button type="submit" class="attendance-btn-sm btn btn-success" {% if colleague.status == 'Present' %}disabled{% endif %}>
                             Mark Present
                         </button>
                     </form>
-                    <form method="POST" action="{{ url_for('attendance') }}" style="display: inline;">
-                        <input type="hidden" name="colleague_id" value="{{ colleague.id }}">
+
+                    <!-- Mark Absent -->
+                    <form method="POST" action="{{ url_for('update_status', colleague_id=colleague.id) }}" style="display:inline;">
                         <input type="hidden" name="status" value="Absent">
-                        <button type="submit" class="btn btn-danger btn-sm" {% if colleague.status == 'Absent' %}disabled{% endif %}>
+                        <button type="submit" class="attendance-btn-sm btn btn-danger" {% if colleague.status == 'Absent' %}disabled{% endif %}>
                             Mark Absent
                         </button>
+                    </form>
+
+                    <!-- Edit -->
+                    <button class="attendance-btn-sm btn btn-warning" onclick="toggleEdit({{ colleague.id }})">Edit</button>
+
+                    <!-- Delete -->
+                    <form method="POST" action="{{ url_for('delete_colleague', colleague_id=colleague.id) }}" style="display:inline;">
+                        <button type="submit" class="attendance-btn-sm btn btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+
+            <!-- Edit Form (Initially Hidden) -->
+            <tr id="edit-row-{{ colleague.id }}" class="hidden-form">
+                <td colspan="3">
+                    <form method="POST" action="{{ url_for('edit_colleague', colleague_id=colleague.id) }}">
+                        <div class="form-group">
+                            <input type="text" name="name" class="form-control" value="{{ colleague.name }}" required>
+                        </div>
+                        <button type="submit" class="btn btn-success btn-sm">Save</button>
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="toggleEdit({{ colleague.id }})">Cancel</button>
                     </form>
                 </td>
             </tr>
@@ -42,4 +80,12 @@
         </tbody>
     </table>
 </div>
+
+<!-- Inline JavaScript to Toggle Edit Form -->
+<script>
+    function toggleEdit(colleagueId) {
+        const editRow = document.getElementById(`edit-row-${colleagueId}`);
+        editRow.classList.toggle('hidden-form');
+    }
+</script>
 {% endblock %}
