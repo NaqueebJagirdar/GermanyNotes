@@ -24,17 +24,17 @@
     <!-- Display Existing Notes -->
     <h2 id="existing-notes" class="mt-5">Existing Notes</h2>
     {% if notes %}
-    <div class="scrollable-notes mt-3">
-        <table class="table table-bordered">
-            <thead>
+    <div class="table-responsive mt-3">
+        <table class="table table-striped table-hover">
+            <thead class="thead-dark">
                 <tr>
                     <th>Title</th>
                     <th>Content</th>
-                    <th>Editor</th> <!-- New column for Editor -->
+                    <th>Editor</th>
                     <th>Modifier</th>
                     <th>Status</th>
-                    <th>Created Date</th> <!-- New column for Created Date -->
-                    <th>Last Edited Date</th> <!-- New column for Last Edited Date -->
+                    <th>Created Date</th>
+                    <th>Last Edited Date</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -43,8 +43,8 @@
                 <tr>
                     <td>{{ note.title }}</td>
                     <td>{{ note.content }}</td>
-                    <td>{{ note.editor_name }}</td> <!-- Display Editor -->
-                    <td>{{ note.modifier_name if note.modifier_name else 'Not available' }}</td> <!-- Show the modifier name -->
+                    <td>{{ note.editor_name }}</td>
+                    <td>{{ note.modifier_name if note.modifier_name else 'Not available' }}</td>
                     <td>
                         <span class="badge {% if note.status == 'Completed' %}bg-success{% elif note.status == 'In-Query' %}bg-warning{% endif %}">
                             {{ note.status }}
@@ -69,7 +69,6 @@
                         {% endif %}
                     </td>
                     <td>
-
                         <!-- Status Buttons -->
                         <form method="POST" action="{{ url_for('update_note_status', note_id=note.id, category=category) }}" style="display:inline;">
                             <input type="hidden" name="status" value="In-Query">
@@ -102,7 +101,6 @@
                                 <label for="content-{{ note.id }}">Content</label>
                                 <textarea class="form-control" id="content-{{ note.id }}" name="content" rows="4" required>{{ note.content }}</textarea>
                             </div>
-                            <!-- Modifier Name Input -->
                             <div class="form-group">
                                 <label for="modifier-name-{{ note.id }}">Modifier Name</label>
                                 <input type="text" class="form-control" id="modifier-name-{{ note.id }}" name="modifier_name" value="{{ note.modifier_name if note.modifier_name else '' }}">
@@ -123,7 +121,6 @@
     <p class="text-muted">No notes available for this category.</p>
     {% endif %}
 </div>
-
 <!-- Inline Editing Script -->
 <script>
     function toggleEdit(noteId) {
@@ -142,3 +139,120 @@
     }
 </script>
 {% endblock %}
+
+<!-- CSS Styles for the table and buttons -->
+
+<style>
+    /* General table styling */
+    .table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-top: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .table th, .table td {
+        padding: 12px 18px;
+        text-align: center;
+        border: 1px solid #ddd;
+    }
+
+    /* Header Styling */
+    .table th {
+        background-color: #4CAF50; /* Green background for header */
+        color: white;
+        font-weight: bold;
+    }
+
+    /* Alternate Row Coloring */
+    .table tbody tr:nth-child(2n) {
+        background-color: #f2f9f2; /* Very light green background for every 2nd row */
+    }
+
+    .table tbody tr:nth-child(2n+1) {
+        background-color: #ffffff; /* White background for every 1st, 3rd, 5th, etc. row */
+    }
+
+    /* Column borders */
+    .table th, .table td {
+        border-left: 1px solid #ddd;
+        border-bottom: 1px solid #ddd;
+    }
+
+    /* First Column Border */
+    .table td:first-child, .table th:first-child {
+        border-left: none;
+    }
+
+    /* Hover effect for rows */
+    .table tbody tr:hover {
+        background-color: #f1f1f1;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        justify-content: space-around;
+        gap: 10px;
+    }
+
+    .action-buttons button {
+        width: 90px;
+    }
+
+    /* Button styles */
+    .action-buttons .btn {
+        padding: 6px 12px;
+        font-size: 14px;
+    }
+
+    .action-buttons .btn-warning {
+        background-color: #f0ad4e;
+        border-color: #f0ad4e;
+    }
+
+    .action-buttons .btn-success {
+        background-color: #5bc0de;
+        border-color: #5bc0de;
+    }
+
+    .action-buttons .btn-danger {
+        background-color: #d9534f;
+        border-color: #d9534f;
+    }
+
+    .action-buttons .btn-sm {
+        padding: 6px 12px;
+    }
+
+    /* Styling for badges (Completed/In-Query) */
+    .badge {
+        font-size: 0.875rem;
+        padding: 5px 10px;
+    }
+
+    /* Input styling */
+    .form-control {
+        border-radius: 6px;
+        padding: 10px;
+    }
+
+    .form-group label {
+        font-weight: bold;
+    }
+
+    .btn-primary {
+        background-color: #4CAF50;
+        border-color: #4CAF50;
+    }
+
+    /* Style the "Modify" button */
+    .btn-warning {
+        background-color: #FFC107;
+        border-color: #FFC107;
+    }
+</style>
+
+
