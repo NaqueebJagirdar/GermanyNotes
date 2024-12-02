@@ -1,5 +1,7 @@
 {% extends "base.html" %}
+
 {% block title %}Add Notes{% endblock %}
+
 {% block content %}
 <div class="category-container mt-5">
     <!-- Attendance Button -->
@@ -10,12 +12,15 @@
     <!-- Page Title -->
     <h1>Choose Note Category</h1>
 
-    <!-- Category Buttons -->
+    <!-- Category Buttons with In-Query Count -->
     <div class="category-grid">
         {% for category in categories %}
-        <a href="{{ url_for('add_category_notes', category=category) }}" class="note-category-btn">
-            {{ category }}
-        </a>
+            <a href="{{ url_for('add_category_notes', category=category) }}" class="note-category-btn">
+                {{ category }}
+                {% if inquery_counts[category] > 0 %}
+                    <span class="badge bg-warning">{{ inquery_counts[category] }} In-Query</span>
+                {% endif %}
+            </a>
         {% endfor %}
     </div>
 </div>

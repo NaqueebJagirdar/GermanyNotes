@@ -10,7 +10,6 @@
     <form method="POST" action="{{ url_for('attendance') }}" class="mb-4 text-center">
         <div class="form-group">
             <label for="attendance_date">Select Date:</label>
-            <!-- Date input field with the selected date or today's date as the default value -->
             <input type="date" id="attendance_date" name="attendance_date" class="form-control" value="{{ selected_date or today_date }}" required>
         </div>
         <button type="submit" class="btn btn-primary">Set Date</button>
@@ -96,6 +95,23 @@
         </tbody>
     </table>
 
+    <!-- Add Colleague Button -->
+    <div class="mt-4 text-center">
+        <button class="btn btn-success" onclick="showAddColleagueForm()">Add Colleague</button>
+    </div>
+
+    <!-- Add Colleague Form (Initially Hidden) -->
+    <div id="add-colleague-form" class="mt-4" style="display:none;">
+        <form method="POST" action="{{ url_for('add_colleague') }}">
+            <div class="form-group">
+                <label for="new_colleague_name">Colleague Name:</label>
+                <input type="text" name="name" id="new_colleague_name" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Add</button>
+            <button type="button" class="btn btn-secondary" onclick="hideAddColleagueForm()">Cancel</button>
+        </form>
+    </div>
+
     <!-- Save and Clear Roles Buttons -->
     <div class="mt-4">
         <button class="btn btn-primary" onclick="saveRoles()">Save Roles</button>
@@ -103,8 +119,16 @@
     </div>
 </div>
 
-<!-- Inline JavaScript to Handle Roles -->
 <script>
+    // Toggle visibility of the "Add Colleague" form
+    function showAddColleagueForm() {
+        document.getElementById('add-colleague-form').style.display = 'block';
+    }
+
+    function hideAddColleagueForm() {
+        document.getElementById('add-colleague-form').style.display = 'none';
+    }
+
     let roles = {};
 
     function updateRole(colleagueId, role) {
