@@ -204,7 +204,12 @@ def add_category_notes(category):
             db.session.add(new_note)
             db.session.commit()
     notes = Note.query.filter_by(category=category).all()
-    return render_template("add_category_notes.html", category=category, notes=notes, editor_name=editor_name)
+    completed_count = Note.query.filter_by(category=category, status='Completed').count()
+    inquery_count = Note.query.filter_by(category=category, status='In-Query').count()
+
+    return render_template("add_category_notes.html", category=category, notes=notes,
+     editor_name=editor_name, completed_count=completed_count, inquery_count=inquery_count)
+
 
 @app.route("/delete-note/<int:note_id>/<category>", methods=["POST"])
 def delete_note(note_id, category):
