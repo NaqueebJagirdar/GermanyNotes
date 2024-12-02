@@ -24,6 +24,7 @@ class Note(db.Model):
     edited_date = db.Column(db.DateTime, onupdate=datetime.utcnow)
     status = db.Column(db.String(50), default="In-Query")
     editor_name = db.Column(db.String(100), nullable=True)
+    modifier_name = db.Column(db.String(100), nullable=True)
 # Routes
 @app.route("/")
 def dashboard():
@@ -197,16 +198,32 @@ def view_category_notes(category):
     notes = Note.query.filter_by(category=category).all()
     return render_template("category_notes.html", category=category, notes=notes)
 
-@app.route("/edit-note/<int:note_id>/<category>", methods=["GET", "POST"])
-def edit_note(note_id, category):
-    note = Note.query.get_or_404(note_id)
-    if request.method == "POST":
-        note.title = request.form.get("title")
-        note.content = request.form.get("content")
-        note.edited_date = datetime.utcnow()  # Update edited date
-        db.session.commit()
-        return redirect(url_for("add_category_notes", category=category))
-    return render_template("edit_note.html", note=note, category=category)
+
+@app.route('/modify_note/<int:note_id>/<category>', methods=['POST'])
+def modify_note(note_id, category):
+    # Get the note object by ID
+    note = Note.query.get(note_id)
+
+    # Check if the note exists
+    if not note:
+        # Handle error if note doesn't exist (optional)
+        return redirect(url_for('notes_view', category=category))
+
+    # Get form data
+    title = request.form.get('title')
+    content = request.form.get('content')
+    modifier_name = request.form.get('modifier_name')
+
+    # Update the note
+    note.title = title
+    note.content = content
+    note.modifier_name = modifier_name  # Update the modifier_name field
+
+    # Commit changes to the database
+    db.session.commit()
+
+    # Redirect to the notes view after saving
+    return redirect(url_for('add_category_notes', category=category))
 
 @app.cli.command("update-notes-dates")
 def update_notes_dates():
