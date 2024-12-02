@@ -199,28 +199,31 @@ def view_category_notes(category):
     return render_template("category_notes.html", category=category, notes=notes)
 
 
-@app.route('/modify_note/<int:note_id>', methods=['GET', 'POST'])
-def modify_note(note_id):
-    note = Note.query.get_or_404(note_id)
+@app.route('/modify_note/<int:note_id>/<category>', methods=['POST'])
+def modify_note(note_id, category):
+    # Get the note object by ID
+    note = Note.query.get(note_id)
 
-    if request.method == 'POST':
-        title = request.form['title']
-        content = request.form['content']
-        modifier_name = request.form.get('modifier_name', '')  # This should come from the form
+    # Check if the note exists
+    if not note:
+        # Handle error if note doesn't exist (optional)
+        return redirect(url_for('notes_view', category=category))
 
-        # Update the note details
-        note.title = title
-        note.content = content
-        note.modifier_name = modifier_name  # Store the modifier name
-        note.edited_date = datetime.utcnow()
+    # Get form data
+    title = request.form.get('title')
+    content = request.form.get('content')
+    modifier_name = request.form.get('modifier_name')
 
-        db.session.commit()
+    # Update the note
+    note.title = title
+    note.content = content
+    note.modifier_name = modifier_name  # Update the modifier_name field
 
-        flash('Note has been modified successfully!', 'success')
-        return redirect(url_for('view_note', note_id=note.id))
+    # Commit changes to the database
+    db.session.commit()
 
-    return render_template('modify_note.html', note=note)
-
+    # Redirect to the notes view after saving
+    return redirect(url_for('add_category_notes', category=category))
 
 @app.cli.command("update-notes-dates")
 def update_notes_dates():

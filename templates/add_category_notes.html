@@ -8,6 +8,7 @@
 
     <!-- Add New Note Form -->
     <h2 class="mt-4">Add a New Note</h2>
+
     <form method="POST" action="{{ url_for('add_category_notes', category=category) }}">
         <div class="form-group">
             <label for="title">Title</label>
@@ -100,6 +101,11 @@
                             <div class="form-group">
                                 <label for="content-{{ note.id }}">Content</label>
                                 <textarea class="form-control" id="content-{{ note.id }}" name="content" rows="4" required>{{ note.content }}</textarea>
+                            </div>
+                            <!-- Modifier Name Input -->
+                            <div class="form-group">
+                                <label for="modifier-name-{{ note.id }}">Modifier Name</label>
+                                <input type="text" class="form-control" id="modifier-name-{{ note.id }}" name="modifier_name" value="{{ note.modifier_name if note.modifier_name else '' }}">
                             </div>
                             <div class="mt-2">
                                 <button type="submit" class="btn btn-success btn-sm">Save</button>
