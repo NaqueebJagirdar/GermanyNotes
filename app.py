@@ -30,6 +30,7 @@ class Note(db.Model):
 def dashboard():
     return render_template("dashboard.html")
 
+
 @app.route("/add-notes", methods=["GET", "POST"])
 def add_notes():
     categories = [
@@ -43,16 +44,24 @@ def add_notes():
         "WSE Effort Estimation",
         "WSE Workload",
     ]
+
+    # Count "In-Query" notes for each category
+    inquery_counts = {}
+    for category in categories:
+        inquery_counts[category] = Note.query.filter_by(category=category, status='In-Query').count()
+
+    # Handle form submission for adding a new note
     if request.method == "POST":
         category = request.form.get("category")
         title = request.form.get("title")
         content = request.form.get("content")
         if category and title and content:
-            new_note = Note(category=category, title=title, content=content)
+            new_note = Note(category=category, title=title, content=content, status="In-Query")
             db.session.add(new_note)
             db.session.commit()
             return redirect(url_for("view_notes"))
-    return render_template("add_notes.html", categories=categories)
+
+    return render_template("add_notes.html", categories=categories, inquery_counts=inquery_counts)
 
 class Colleague(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -204,7 +213,10 @@ def add_category_notes(category):
             db.session.add(new_note)
             db.session.commit()
     notes = Note.query.filter_by(category=category).all()
-    return render_template("add_category_notes.html", category=category, notes=notes, editor_name=editor_name)
+    completed_count = Note.query.filter_by(category=category, status='Completed').count()
+    inquery_count = Note.query.filter_by(category=category, status='In-Query').count()
+    return render_template("add_category_notes.html", category=category, notes=notes,
+                           editor_name=editor_name, completed_count=completed_count, inquery_count=inquery_count)
 
 @app.route("/delete-note/<int:note_id>/<category>", methods=["POST"])
 def delete_note(note_id, category):
