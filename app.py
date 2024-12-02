@@ -59,6 +59,7 @@ class Colleague(db.Model):
     name = db.Column(db.String(100), nullable=False)
     status = db.Column(db.String(20), nullable=False, default="Absent")
     role = db.Column(db.String(50), nullable=True)
+
 @app.cli.command("seed-attendance")
 def seed_attendance():
     """Seed the database with initial colleagues for attendance."""
@@ -73,28 +74,45 @@ def seed_attendance():
     db.session.commit()
     print("Attendance data seeded.")
 
+
 @app.route('/attendance', methods=['GET', 'POST'])
 def attendance():
+    # Initialize selected_date variable
+    selected_date = None
+
     if request.method == 'POST':
-        # Add a new colleague
-        name = request.form.get('name')
-        if name:
-            new_colleague = Colleague(name=name, status='Absent')  # Default status is 'Absent'
-            db.session.add(new_colleague)
-            db.session.commit()
-        return redirect(url_for('attendance'))
+        # Check if the form contains a selected date
+        selected_date = request.form.get('attendance_date')
+
+        if selected_date:
+            # Parse the selected date from the form (user's input)
+            date_obj = datetime.strptime(selected_date, "%Y-%m-%d")
+        elif request.form.get('clear_date'):  # Handle the "Clear Date" action
+            date_obj = None  # Clear the date if "Clear Date" is triggered
+        else:
+            # Default to today's date if no date is selected or cleared
+            date_obj = datetime.now()
+
+    else:
+        # Default to today's date if it's a GET request
+        date_obj = datetime.now()
+
+    # If date_obj is still None (after clear action), set it to today's date
+    if not date_obj:
+        date_obj = datetime.now()
+
+    # Get date in the required formats
+    date_dd_mm_yyyy = date_obj.strftime("%d-%m-%Y")  # Format: 01-12-2024
+    date_words = date_obj.strftime("%d %B %Y")  # Format: 01 December 2024
+    today_date = datetime.today().strftime('%Y-%m-%d')
 
     # Fetch all colleagues from the database
     colleagues = Colleague.query.all()  # Dynamically fetch all colleague data
 
     # Calculate present and total counts dynamically
     total_colleagues = len(colleagues)  # Total number of colleagues in the database
-    present_colleagues = sum(1 for colleague in colleagues if colleague.status == 'Present')  # Count of colleagues marked as 'Present'
-
-    # Get the current date in two formats
-    today_date = datetime.now()
-    date_dd_mm_yyyy = today_date.strftime("%d-%m-%Y")  # Format: 01-12-2024
-    date_words = today_date.strftime("%d %B %Y")  # Format: 01 December 2024
+    present_colleagues = sum(
+        1 for colleague in colleagues if colleague.status == 'Present')  # Count of colleagues marked as 'Present'
 
     # Pass the calculated and fetched data to the template
     return render_template(
@@ -103,8 +121,11 @@ def attendance():
         date_words=date_words,
         colleagues=colleagues,
         present_colleagues=present_colleagues,  # Dynamic count of present colleagues
-        total_colleagues=total_colleagues      # Dynamic total count of colleagues
+        total_colleagues=total_colleagues,  # Dynamic total count of colleagues
+        today_date=today_date,
+        selected_date=selected_date  # Pass the selected date to the template
     )
+
 
 @app.route("/add-colleague", methods=["POST"])
 def add_colleague():
