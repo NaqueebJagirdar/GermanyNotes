@@ -1,27 +1,28 @@
 {% extends "base.html" %}
+
 {% block title %}Attendance{% endblock %}
+
 {% block content %}
 <div class="attendance-container mt-5">
     <h1 class="text-center">Attendance</h1>
-    <!-- Dynamic Attendance Summary -->
+
+    <!-- Date Picker Form for selecting a date (Centered) -->
+    <form method="POST" action="{{ url_for('attendance') }}" class="mb-4 text-center">
+        <div class="form-group">
+            <label for="attendance_date">Select Date:</label>
+            <!-- Date input field with the selected date or today's date as the default value -->
+            <input type="date" id="attendance_date" name="attendance_date" class="form-control" value="{{ selected_date or today_date }}" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Set Date</button>
+        <button type="button" class="btn btn-secondary" onclick="clearDate()">Clear Date</button>
+    </form>
+
+    <!-- Attendance Summary -->
     <h3 class="text-center">
         Today's Attendance:
         <span style="color: green;">{{ present_colleagues }}</span> /
         <span style="color: blue;">{{ total_colleagues }}</span>
     </h3>
-    <!-- Display Current Date -->
-    <p class="text-center mt-3">
-        <strong>Today's Date:</strong>
-        <span>{{ date_dd_mm_yyyy }}</span>
-        (<span>{{ date_words }}</span>)
-    </p>
-    <!-- Add New Colleague Form -->
-    <form method="POST" action="{{ url_for('add_colleague') }}" class="mb-4">
-        <div class="form-group">
-            <input type="text" name="name" class="form-control" placeholder="Enter colleague's name" required>
-        </div>
-        <button type="submit" class="btn btn-primary">Add Colleague</button>
-    </form>
 
     <!-- Attendance Tables -->
     <table class="attendance-table table table-bordered table-hover mt-4">
@@ -36,17 +37,12 @@
         <tbody>
             {% for colleague in colleagues %}
             <tr id="row-{{ colleague.id }}" class="{% if colleague.role == 'Coordinator' %}coordinator-highlight{% elif colleague.role == 'Presenter' %}presenter-highlight{% elif colleague.role == 'Editor' %}editor-highlight{% endif %}">
-                <!-- Colleague Name -->
                 <td>{{ colleague.name }}</td>
-
-                <!-- Attendance Status -->
                 <td>
                     <span class="{% if colleague.status == 'Present' %}badge-present{% else %}badge-absent{% endif %}">
                         {{ colleague.status }}
                     </span>
                 </td>
-
-                <!-- Actions (Update, Edit, Delete) -->
                 <td>
                     <!-- Mark Present -->
                     <form method="POST" action="{{ url_for('update_status', colleague_id=colleague.id) }}" style="display:inline;">
@@ -149,5 +145,13 @@
         const editRow = document.getElementById(`edit-row-${colleagueId}`);
         editRow.classList.toggle('hidden-form');
     }
+
+    function clearDate() {
+        // Clear the date picker by setting it to an empty value
+        document.getElementById('attendance_date').value = '';
+        // Optionally, submit the form with empty date to reset the attendance view
+        document.querySelector('form').submit();
+    }
 </script>
+
 {% endblock %}
