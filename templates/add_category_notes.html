@@ -4,17 +4,16 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h1 class="text-center">Notes for Category: {{ category }}</h1>
+    <h1 class="text-center" style="margin-bottom: 8px;">Notes for Category: {{ category }}</h1>
 
     <!-- Status Overview Section (Right Aligned) -->
     <div class="status-overview mb-4" style="text-align: right;">
-        <h2>Status Overview for Category: {{ category }}</h2>
         <p><span style="color: black;"><strong>Total Notes: </strong>{{ notes|length }}</span></p>
         <p><span style="color: green;"><strong>Completed Notes: </strong>{{ completed_count }}</span></p>
         <p><span style="color: red;"><strong>In-Query Notes: </strong>{{ inquery_count }}</span></p>
     </div>
     <!-- Add New Note Form -->
-    <h2 class="mt-4">Add a New Note</h2>
+    <h2 style="margin-top: 5px;">Add a New Note</h2>
 
     <form method="POST" action="{{ url_for('add_category_notes', category=category) }}">
         <div class="form-group">
@@ -261,5 +260,3 @@
         border-color: #FFC107;
     }
 </style>
-
-
